@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubernetes-test-app
+spec:
+  replicas: 2  # Number of pods
+  selector:
+    matchLabels:
+      app: kubernetes-test-app
+  template:
+    metadata:
+      labels:
+        app: kubernetes-test-app
+    spec:
+      containers:
+      - name: kubernetes-test-app
+        image: kubernetes-test-app:latest
+        imagePullPolicy: Never  # Tell Kubernetes not to pull from a registry
+        # image: rupesh420/kubernetes-test-app:latest
+        resources:
+          requests:
+            memory: "32Mi"  # The guaranteed minimum memory
+            cpu: "100m"     # The guaranteed minimum CPU (10% of a core)
+          limits:
+            memory: "64Mi"  # The maximum allowed memory
+            cpu: "200m"     # The maximum allowed CPU (20% of a core)
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubernetes-test-app
+spec:
+  selector:
+    app: kubernetes-test-app
+  ports:
+  - port: 8080
+    targetPort: 5000
